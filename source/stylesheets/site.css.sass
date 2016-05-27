@@ -1,0 +1,115 @@
+@import "compass/reset"
+@import "compass/css3"
+@import "compass/typography/links/link-colors"
+@import "compass/typography/lists/inline-list"
+@import "compass/typography/vertical_rhythm"
+@import "susy"
+
+$red: #f2411c
+$black: #333
+$white: #fff
+$light-gray: #f3f3f3
+
+/* ~ Typography ~ */
+body
+  font-size: 11.5pt
+  font-family: Helvetica, Arial, serif
+  line-height: 130%
+  color: $black
+pre
+  font-family: "Bitstream Vera Sans Mono", monospace
+  font-size: 10.5pt
+h1, h2, h3, h4, h5, h6
+  font-weight: bold
+  font-size: 1.2em
+strong
+  font-weight: bold
+weak
+  font-weight: 100
+  opacity: 0.3
+em
+  text-decoration: italic
+
+nav
+  ol
+    +inline-list()
+    li
+      margin-right: 1em
+      a
+        text-decoration: none
+
+section.paper
+  p:first-child
+    color: #666
+    font-size: 1.2em
+    line-height: 150%
+    strong
+      color: #000
+  pre
+    padding: 1em
+    background-color: $light-gray
+    border: 1px solid darken($light-gray, 5%)
+    display: block
+    +border-radius
+
+.dark-area
+  background: $black
+  color: $white
+  a
+    +link-colors($white)
+
+.red-area
+  color: $white
+  background: $red
+  a
+    +link-colors($white)
+
+.white-area
+  color: $black
+  background: $white
+  a
+    +link-colors($red)
+
+/* ~ WIP ~ */
+.squirrel
+  td
+    padding: 1em
+    font-size: 1.2em
+    font-weight: bold
+
+// Vertical rhythm
+.vertical-rhythm
+  & > *
+    +trailer(1)
+body
+  & > section, header
+    +rhythm(0,2,2,0)
+  & > nav
+    +rhythm(0,1,1,0)
+
+// CSS Grid
+$show-grids: false
++set-grid(12 1/4 after)
+.container
+  +container()
+  max-width: 40em
+  @extend .vertical-rhythm
+
+#tagline
+  // padding: 4em 0
+  #how_to_get
+    padding: 1em
+    margin: 1em 0
+    background: darken($red, 20%)
+    border: 1px inset darken($red, 5%)
+    +border-radius
+  h1, h2
+    line-height: 100%
+    padding: 0
+    margin: 0
+  h1
+    font-size: 5em
+  h2
+    font-size: 1.4em
+    font-weight: 100
+    margin-left: 4px

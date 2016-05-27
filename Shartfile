@@ -1,0 +1,13 @@
+source './build'
+
+# AWS creds are Steel's keys.
+target 'firehose.io', {
+  :provider               => 'AWS',
+  :aws_secret_access_key  => ENV['AWS_SECRET_ACCESS_KEY'],
+  :aws_access_key_id      => ENV['AWS_ACCESS_KEY_ID']
+}
+
+# Set the cache on these for over a year
+path(/\.(png|jpg|gif|js|css)$/) do
+  self.cache_control = 'max-age=31536000'
+end
