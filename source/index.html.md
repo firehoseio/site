@@ -6,7 +6,7 @@ Firehose is a __minimally invasive way of building realtime web apps__ without c
 
 # Why Firehose?
 
-__Work with grain of the web.__ Firehose embraces [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) design prinicpals and consequently works great with any library that speaks HTTP. That means you can build simple realtime APIs, similar to Twitter's Site Stream API, that can be consumed without parsing complex protocols.
+__Work with grain of the web.__ Firehose embraces [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) design principles and consequently works great with any library that speaks HTTP. That means you can build simple realtime APIs, similar to Twitter's Site Stream API, that can be consumed without parsing complex protocols.
 
 __Integrates with [Backbone.js](http://documentcloud.github.com/backbone/) and [Ember.js](http://emberjs.com/).__ Setting up a model in a web browser to listen for updates from the server is simple and straight-forward.
 
