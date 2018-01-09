@@ -75,13 +75,13 @@ If everything is working correctly, "Howdy friend" should have been displayed in
 
 # Contributors
 
-These fine folks at [Poll Everywhere](http://www.polleverywhere.com/) worked tirelessly to bring you Firehose.io.
+These fine folks at [Poll Everywhere](https://www.polleverywhere.com/) worked tirelessly to bring you Firehose.io.
 
-* [Brad Gessler](http://twitter.com/bradgessler)
-* [Steel Fu](http://twitter.com/steelfu)
+* [Brad Gessler](https://twitter.com/bradgessler)
+* [Steel Fu](https://twitter.com/steelfu)
 * Paul Cortens
-* [Zach Zolton](http://twitter.com/zdzolton)
-* [Christopher Bertels](http://twitter.com/bakkdoor)
+* [Zach Zolton](https://twitter.com/zdzolton)
+* [Christopher Bertels](https://twitter.com/bakkdoor)
 
 # Source Code
 
