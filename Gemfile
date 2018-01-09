@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Static site generator.
-gem "middleman", "~> 3.3.0"
+gem "middleman", "~> 4.2.0"
 
 # Reload web pages on save to make development awesome.
 gem "middleman-livereload"
@@ -16,7 +16,7 @@ gem "shart", "~> 4.0.0.alpha"
 gem "redcarpet"
 
 # CSS3 helpers and vertical grid.
-gem "compass"
+gem "middleman-compass"
 
 # Horizontal responsive grid.
 gem "susy", "~> 2.0.0.alpha"
@@ -25,7 +25,7 @@ gem "susy", "~> 2.0.0.alpha"
 gem "breakpoint"
 
 # Humanized dates.
-gem "chronic" 
+gem "chronic"
 
 # Maintain harmonic scale.
 gem "modular-scale"
