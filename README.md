@@ -20,5 +20,5 @@ $ bundle exec middleman server
 
 To publish this site, run:
 
-`bundle exed rake`
+`bundle exec rake`
 
