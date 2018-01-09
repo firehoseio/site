@@ -81,6 +81,7 @@ These fine folks at [Poll Everywhere](http://www.polleverywhere.com/) worked tir
 * [Steel Fu](http://twitter.com/steelfu)
 * Paul Cortens
 * [Zach Zolton](http://twitter.com/zdzolton)
+* [Christopher Bertels](http://twitter.com/bakkdoor)
 
 # Source Code
 
