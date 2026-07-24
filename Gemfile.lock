@@ -92,15 +92,6 @@ GEM
     ffi (1.17.4-x86_64-darwin)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    haml (6.4.0)
-      temple (>= 0.8.2)
-      thor
-      tilt
-    haml-rails (3.1.0)
-      actionpack (>= 5.1)
-      activesupport (>= 5.1)
-      haml (>= 4.0.6)
-      railties (>= 5.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
@@ -237,7 +228,6 @@ GEM
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     stringio (3.2.0)
-    temple (0.10.4)
     thor (1.5.0)
     tilt (2.8.0)
     timeout (0.6.1)
@@ -259,7 +249,6 @@ PLATFORMS
   x86_64-darwin
 
 DEPENDENCIES
-  haml-rails
   markdown-rails (~> 1.0)
   sass-rails
   sitepress (~> 4.1)

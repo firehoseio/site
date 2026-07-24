@@ -1,0 +1,34 @@
+# Dev environment for firehose-site — a Sitepress static site.
+#
+# No build step on purpose: Loopyard serves code from an external Docker volume
+# and there is no host filesystem, so a Dockerfile `build:` context can't be
+# delivered to the daemon. Instead we run a stock public Ruby image and install
+# system deps + gems at container start. Gems persist in a named volume so only
+# the first boot pays the full cost.
+services:
+  web:
+    image: ruby:3.3-slim-bookworm
+    working_dir: /workspace
+    command: >
+      sh -c "apt-get update -qq &&
+             apt-get install -y --no-install-recommends build-essential libyaml-dev &&
+             (bundle check || bundle install) &&
+             bundle exec sitepress server -a 0.0.0.0 -p 8080"
+    volumes:
+      - ${CODE_VOLUME}:/workspace   # external code volume Loopyard provides
+      - gems:/usr/local/bundle      # persist installed gems across restarts
+    ports:
+      - "8080"    # Sitepress preview server
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      BUNDLE_PATH: /usr/local/bundle
+    stdin_open: true
+    tty: true
+
+volumes:
+  gems:
+  # External volume holding the repo at /workspace. ${CODE_VOLUME} resolves to
+  # the volume name Loopyard injects into the environment at compose time.
+  ${CODE_VOLUME}:
+    external: true

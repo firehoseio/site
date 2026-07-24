@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= current_page.data.fetch("title", "Firehose.io") %></title>
+    <%= stylesheet_link_tag "site", "code" %>
+  </head>
+  <body>
+    <header class="red-area" id="tagline">
+      <div class="container">
+        <h1>Firehose<weak>.io</weak></h1>
+        <h2>Build realtime web applications</h2>
+        <div id="how_to_get"><pre>gem install firehose</pre></div>
+      </div>
+    </header>
+    <nav class="dark-area">
+      <div class="container">
+        <ol>
+          <li><strong><a href="https://github.com/firehoseio/firehose">Fork it on Github</a></strong></li>
+          <li><a href="https://twitter.com/firehoseio">Follow Firehose.io on Twitter</a></li>
+          <li><a href="https://www.youtube.com/watch?v=N6kHjXtLspw">Watch the RailsConf Talk</a></li>
+          <li><a href="/v1/">v1 docs</a></li>
+          <li><a href="/next/">next docs</a></li>
+        </ol>
+      </div>
+    </nav>
+    <section class="paper white-area">
+      <div class="container">
+        <%= yield %>
+      </div>
+    </section>
+  </body>
+</html>
