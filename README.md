@@ -2,23 +2,39 @@
 
 This is the public website at http://firehose.io/
 
+It is built with [Sitepress](https://sitepress.cc), a Ruby/Rails static-site
+generator. Content lives in `pages/`, the layout in `layouts/`, and
+images/stylesheets/scripts in `assets/`.
+
 ## Getting started
 
-Firehose uses Middleman to managed site content. To get started, run:
+Install dependencies:
 
 ```sh
 $ bundle
-``
+```
 
-then start the server:
+Start the preview server:
 
 ```sh
-$ bundle exec middleman server
+$ bundle exec sitepress server -a 0.0.0.0 -p 8080
 ```
+
+Then open http://localhost:8080/.
+
+## Documentation layout
+
+- `pages/` — the homepage and shared content
+- `pages/v1/` — the current (v1) Firehose documentation
+- `pages/next/` — documentation for the upcoming "next" release
 
 ## Publishing
 
-To publish this site, run:
+Compile the static site into `build/`:
 
-`bundle exec rake`
+```sh
+$ bundle exec sitepress compile
+```
 
+`bundle exec rake` cleans, compiles, and (with AWS credentials) publishes the
+`build/` output to the `firehose.io` S3 bucket.

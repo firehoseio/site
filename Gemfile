@@ -1,34 +1,15 @@
 source "https://rubygems.org"
 
-# Static site generator.
-gem "middleman", "~> 4.2.0"
+# Stand-alone Sitepress server and static-site compiler.
+gem "sitepress", "~> 4.1"
 
-# Reload web pages on save to make development awesome.
-gem "middleman-livereload"
+# WEBrick powers the Sitepress preview server.
+gem "webrick"
 
-# Code higlighting.
-gem "middleman-syntax"
+# Templating engines. Sitepress runs on a slimmed-down Rails, so Rails template
+# handlers work: HAML for the site layout, Markdown for the documentation pages.
+gem "haml-rails"
+gem "markdown-rails", "~> 1.0"
 
-# Deploy website via shart.
-gem "shart", "~> 4.0.0.alpha"
-
-# Github Markdown extensions. Makes publishing code easier.
-gem "redcarpet"
-
-# CSS3 helpers and vertical grid.
-gem "middleman-compass"
-
-# Horizontal responsive grid.
-gem "susy", "~> 2.0.0.alpha"
-
-# Media query breakpoints.
-gem "breakpoint"
-
-# Humanized dates.
-gem "chronic"
-
-# Maintain harmonic scale.
-gem "modular-scale"
-
-# Firehose assets.
-gem "firehose"
+# SCSS compilation through the Sprockets asset pipeline.
+gem "sass-rails"

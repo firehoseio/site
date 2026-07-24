@@ -1,5 +1,5 @@
 ---
-title: Firehose | Build realtime web applications
+title: Firehose v1 | Documentation
 ---
 
 Firehose is a __minimally invasive way of building realtime web apps__ without complex protocols or rewriting your app from scratch. Its a dirt simple pub/sub server that __keeps client-side Javascript models in synch with the server__ code via WebSockets or HTTP long polling. It fully __embraces RESTful design patterns__, which means you'll end up with a nice API after you build your app.

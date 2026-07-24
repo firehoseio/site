@@ -1,5 +1,3 @@
-.mm-pid-*
-.sass-cache
 .DS_Store
-Gemfile.lock
-build/
+/build
+/tmp
