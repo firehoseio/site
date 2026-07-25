@@ -6,8 +6,24 @@ task :clean do
   sh 'rm -rf ./build'
 end
 
+namespace :tailwind do
+  input  = "./assets/tailwind/application.css"
+  output = "./assets/stylesheets/tailwind.css"
+  config = "./tailwind.config.js"
+
+  desc "Compile the Tailwind stylesheet (minified)"
+  task :build do
+    sh "./bin/tailwindcss -c #{config} -i #{input} -o #{output} --minify"
+  end
+
+  desc "Watch and recompile the Tailwind stylesheet on change"
+  task :watch do
+    sh "./bin/tailwindcss -c #{config} -i #{input} -o #{output} --watch"
+  end
+end
+
 desc "Compile the sitepress site"
-task :compile do
+task compile: "tailwind:build" do
   sh 'bundle exec sitepress compile'
 end
 

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Wrapper around the Tailwind CSS standalone CLI.
+#
+# Downloads the platform-appropriate standalone binary (which bundles the
+# Typography plugin) into ./.tailwind/ on first use, then execs it with
+# whatever arguments were passed. This keeps the ~40MB binary out of git while
+# letting `bin/tailwindcss --watch ...` "just work" in the Procfile.
+set -euo pipefail
+
+VERSION="v3.4.17"
+CACHE_DIR="$(cd "$(dirname "$0")/.." && pwd)/.tailwind"
+BIN="$CACHE_DIR/tailwindcss-$VERSION"
+
+if [ ! -x "$BIN" ]; then
+  case "$(uname -s)" in
+    Linux)  os="linux" ;;
+    Darwin) os="macos" ;;
+    *) echo "Unsupported OS: $(uname -s)" >&2; exit 1 ;;
+  esac
+  case "$(uname -m)" in
+    x86_64|amd64) arch="x64" ;;
+    arm64|aarch64) arch="arm64" ;;
+    *) echo "Unsupported arch: $(uname -m)" >&2; exit 1 ;;
+  esac
+  url="https://github.com/tailwindlabs/tailwindcss/releases/download/${VERSION}/tailwindcss-${os}-${arch}"
+  echo "Downloading Tailwind standalone CLI ${VERSION} (${os}-${arch})..." >&2
+  mkdir -p "$CACHE_DIR"
+  curl -sSL -o "$BIN" "$url"
+  chmod +x "$BIN"
+fi
+
+exec "$BIN" "$@"

@@ -1,34 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= current_page.data.fetch("title", "Firehose.io") %></title>
-    <%= stylesheet_link_tag "site", "code" %>
+    <meta name="description" content="Firehose is a minimally invasive way to build realtime web apps over WebSockets or HTTP long polling, built on RESTful design patterns.">
+    <meta name="theme-color" content="#f2411c">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind" %>
   </head>
-  <body>
-    <header class="red-area" id="tagline">
-      <div class="container">
-        <h1>Firehose<weak>.io</weak></h1>
-        <h2>Build realtime web applications</h2>
-        <div id="how_to_get"><pre>gem install firehose</pre></div>
+  <body class="min-h-screen">
+    <!-- Top navigation -->
+    <header class="sticky top-0 z-40 border-b border-white/10 bg-ink/85 backdrop-blur supports-[backdrop-filter]:bg-ink/70">
+      <div class="container-band flex h-14 items-center justify-between gap-6">
+        <a href="/" class="text-[15px] font-bold tracking-tight text-white">
+          Firehose<span class="text-brand-400">.io</span>
+        </a>
+        <nav class="flex items-center gap-5 sm:gap-7">
+          <a class="nav-link hidden sm:inline" href="https://twitter.com/firehoseio">Twitter</a>
+          <a class="nav-link hidden sm:inline" href="https://www.youtube.com/watch?v=N6kHjXtLspw">Talk</a>
+          <a class="nav-link" href="/v1/">v1&nbsp;docs</a>
+          <a class="nav-link" href="/next/">next&nbsp;docs</a>
+          <a class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20" href="https://github.com/firehoseio/firehose">
+            <svg viewBox="0 0 16 16" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg>
+            <span class="hidden sm:inline">GitHub</span>
+          </a>
+        </nav>
       </div>
     </header>
-    <nav class="dark-area">
-      <div class="container">
-        <ol>
-          <li><strong><a href="https://github.com/firehoseio/firehose">Fork it on Github</a></strong></li>
-          <li><a href="https://twitter.com/firehoseio">Follow Firehose.io on Twitter</a></li>
-          <li><a href="https://www.youtube.com/watch?v=N6kHjXtLspw">Watch the RailsConf Talk</a></li>
-          <li><a href="/v1/">v1 docs</a></li>
-          <li><a href="/next/">next docs</a></li>
-        </ol>
-      </div>
-    </nav>
-    <section class="paper white-area">
-      <div class="container">
-        <%= yield %>
+
+    <!-- Hero -->
+    <section class="relative overflow-hidden bg-brand-600 text-white">
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800"></div>
+      <div class="pointer-events-none absolute -top-32 -right-24 h-96 w-96 rounded-full bg-brand-400/40 blur-3xl"></div>
+      <div class="pointer-events-none absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-brand-900/40 blur-3xl"></div>
+      <div class="relative container-band py-20 sm:py-28">
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
+          <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+          Realtime pub/sub for the web
+        </div>
+        <h1 class="mt-6 text-5xl font-extrabold leading-none tracking-tight sm:text-7xl">
+          Firehose<span class="font-light text-white/50">.io</span>
+        </h1>
+        <p class="mt-5 max-w-xl text-xl font-medium text-white/90 sm:text-2xl">
+          Build realtime web applications &mdash; without complex protocols or
+          rewriting your app from scratch.
+        </p>
+        <div class="mt-9 flex flex-wrap items-center gap-4">
+          <div class="cmd" id="install-cmd">
+            <span>gem install firehose</span>
+            <button type="button" data-copy="gem install firehose"
+                    class="ml-1 rounded-md px-2 py-0.5 text-xs font-semibold text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                    aria-label="Copy install command">copy</button>
+          </div>
+          <a href="https://github.com/firehoseio/firehose"
+             class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink shadow-sm transition-transform hover:-translate-y-0.5">
+            Fork it on GitHub
+          </a>
+        </div>
       </div>
     </section>
+
+    <!-- Content -->
+    <main class="bg-white">
+      <div class="container-band py-16 sm:py-20">
+        <article class="prose prose-firehose prose-stone mx-auto">
+          <%= yield %>
+        </article>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-stone-200 bg-stone-50">
+      <div class="container-band flex flex-col items-center justify-between gap-4 py-10 text-sm text-ink-mute sm:flex-row">
+        <p>
+          <span class="font-semibold text-ink">Firehose<span class="text-brand-500">.io</span></span>
+          &nbsp;&middot;&nbsp; Open source realtime pub/sub.
+        </p>
+        <nav class="flex items-center gap-6">
+          <a class="transition-colors hover:text-brand-600" href="https://github.com/firehoseio/firehose">GitHub</a>
+          <a class="transition-colors hover:text-brand-600" href="https://twitter.com/firehoseio">Twitter</a>
+          <a class="transition-colors hover:text-brand-600" href="/v1/">v1 docs</a>
+          <a class="transition-colors hover:text-brand-600" href="/next/">next docs</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      // Progressive copy-to-clipboard for command chips.
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-copy]");
+        if (!btn || !navigator.clipboard) return;
+        navigator.clipboard.writeText(btn.getAttribute("data-copy")).then(function () {
+          var prev = btn.textContent;
+          btn.textContent = "copied";
+          setTimeout(function () { btn.textContent = prev; }, 1400);
+        });
+      });
+    </script>
   </body>
 </html>

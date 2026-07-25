@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+  }
+  ::selection {
+    background: theme("colors.brand.500");
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* Constrained, centred column shared by every band of the page. */
+  .container-band {
+    @apply mx-auto w-full max-w-3xl px-6 sm:px-8;
+  }
+
+  /* Hero install command styled as a small terminal chip. */
+  .cmd {
+    @apply inline-flex items-center gap-3 rounded-xl border border-white/15
+           bg-black/25 px-4 py-3 font-mono text-sm text-white/95
+           shadow-[0_10px_30px_-12px_rgba(0,0,0,.6)] backdrop-blur-sm;
+  }
+  .cmd::before {
+    content: "$";
+    @apply select-none font-semibold text-white/40;
+  }
+
+  /* Dark nav links with an animated brand underline. */
+  .nav-link {
+    @apply relative text-sm font-medium text-white/70 transition-colors
+           hover:text-white;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute -bottom-1 left-0 h-px w-0 bg-brand-500 transition-all
+           duration-200;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+}

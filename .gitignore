@@ -1,3 +1,10 @@
 .DS_Store
 /build
 /tmp
+
+# Tailwind standalone CLI binary (fetched on demand by bin/tailwindcss)
+/.tailwind
+node_modules
+
+# Loopyard-managed local agent instructions (not for the repo)
+/CLAUDE.local.md
