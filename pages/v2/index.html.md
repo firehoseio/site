@@ -58,10 +58,6 @@ The `firehose:install` generator:
 - appends `import "firehose"` to `app/javascript/application.js` (and pins the client via importmap),
 - runs `db:migrate` — the engine auto-registers the migration that creates the `firehose_channels` and `firehose_messages` tables.
 
-<!-- TODO(repo-url): the 2.0.0 gemspec `homepage` points at github.com/opengraphplus/firehose,
-     which differs from the firehoseio/next origin this build was cloned from. The canonical
-     public repo/URL for 2.0 needs to be confirmed with the maintainer before linking it here. -->
-
 > **Note on the gem name.** The gem is named `firehose` and reports version
 > `2.0.0` (`Firehose::VERSION`). This name is shared with the unrelated legacy
 > 1.x gem — 2.0 is a full rewrite under the same top-level `Firehose` module and
@@ -158,23 +154,122 @@ get   "firehose/sse", to: "firehose#sse"
 
 # Configuration
 
-Server configuration is applied through `Firehose.configure`, or loaded from a
-file or hash with `Firehose.configure_from_yaml` / `Firehose.configure_from_hash`.
-Configurable behavior includes:
+Configuration lives on the **server instance**, reachable as `Firehose.server` —
+there is no module-level `Firehose.configure`. The server exposes three methods:
 
-- **Per-stream retention threshold** — how many messages are retained per stream before older rows are cleaned up (this window is what bounds replay; a cursor older than it triggers `replay_gap`).
-- **Metrics** — set `Firehose.on_metrics` to receive runtime metrics.
-- **Self-healing watchdog** — force-reconnects a consumer whose stream has stalled.
+```ruby
+# Block form — yields the server instance
+Firehose.server.configure do |config|
+  config.cleanup_threshold = 500
+  config.notify_pool_size  = 8
+end
 
-<!-- TODO(config-keys): the digest names configure / configure_from_yaml /
-     configure_from_hash, the retention threshold, Firehose.on_metrics, and the
-     watchdog, but does NOT give exact option keys, default values, the
-     on_metrics block signature, or a sample YAML. Fill these in from the 2.0.0
-     source/README before publishing rather than guessing. -->
+# From a hash — sets each accessor by name (an unknown key raises NoMethodError)
+Firehose.server.configure_from_hash(cleanup_threshold: 500, replay_on_reconnect: false)
 
-> **TODO:** exact configuration keys, defaults, the `on_metrics` block signature,
-> and a sample YAML are not covered by the current source digest and need to be
-> filled in from the 2.0.0 codebase before this section is complete.
+# From YAML — loads the section for the current Rails env, then applies it
+Firehose.server.configure_from_yaml(Rails.root.join("config/firehose.yml"))
+```
+
+At boot the engine loads **`config/firehose.rb`** if it exists (arbitrary Ruby —
+put your `Firehose.server.configure { ... }` there), otherwise it applies
+**`config/firehose.yml`** via `configure_from_yaml`, then starts the server. If
+both files exist, only the `.rb` runs. `configure_from_yaml` reads the section
+for the current `Rails.env` (a missing section is not an error) and supports YAML
+anchors/aliases.
+
+Every key below is an `attr_accessor` on `Firehose::Server`; defaults are from
+`Server#initialize`.
+
+## Connection
+
+- **`database_url`** (default `nil`) — Postgres URL for the dedicated LISTEN/NOTIFY connection. When `nil`, Firehose connects using the app's own ActiveRecord config — the **same database**, on a separate connection outside the AR pool. When set, `PG.connect` uses this URL (with TCP keepalive params appended).
+- **`tcp_keepalives_idle`** (default `30`) — seconds of idle before the OS sends the first TCP keepalive probe.
+- **`tcp_keepalives_interval`** (default `10`) — seconds between keepalive probes.
+- **`tcp_keepalives_count`** (default `3`) — failed probes before the socket is considered dead. Keepalives are always on; these three tune how fast a half-open connection surfaces as an error (~60s with the defaults).
+
+## Reconnection
+
+Tunes recovery when the dedicated PG connection is lost.
+
+- **`reconnect_attempts`** (default `nil` — unlimited) — max reconnect attempts before giving up; `nil` retries forever, otherwise the supervisor raises after exceeding it.
+- **`reconnect_delay`** (default `1`) — base backoff in seconds. The delay grows exponentially: `reconnect_delay * 2 ** (reconnects - 1)`.
+- **`reconnect_max_delay`** (default `30`) — upper cap in seconds on the exponential backoff.
+- **`replay_on_reconnect`** (default `true`) — after a **PG reconnect**, whether the server replays messages missed during the outage to in-process subscribers (per channel, `id >` the last-seen cursor, capped at 1000). This is server-side PG-outage replay only; it's independent of the browser client's own reconnect replay via `last_event_id` / `Last-Event-ID`, which always happens regardless.
+
+## Persistence, retention & replay window
+
+- **`cleanup_threshold`** (default `100`) — retention bound: Firehose keeps roughly the **newest N messages per stream**. After a broadcast, if a channel's `messages_count` exceeds this, a `CleanupJob` deletes everything older than the Nth-newest message (and destroys the channel if it empties). This directly bounds the replay window — a client whose cursor is older than the oldest retained message gets a `replay_gap` error instead of replay.
+- **`notify_max_bytes`** (default `7999`, the `NOTIFY_MAX_BYTES` constant) — byte ceiling for inline delivery. In `broadcast`, an event larger than this is sent without its `data` field and the client re-fetches the row by `id`; a direct `notify(channel, payload)` call above the limit raises `Firehose::Server::PayloadTooLarge`. (7999 is PostgreSQL's payload maximum minus the null terminator — the "8 KB" you may see quoted is approximate.)
+
+## NOTIFY dispatch & backpressure
+
+- **`notify_pool_size`** (default `4`) — number of NOTIFY worker threads (each with its own PG connection) that dispatch NOTIFYs off the listener connection. **`0` runs NOTIFYs inline** on the consumer thread (no pool). Ordering across the pool is not preserved; consumers rely on `id` / `sequence`.
+- **`max_command_queue_depth`** (default `nil` — unbounded) — backpressure cap on the internal command queue. When the queue is at or over the cap, new `:notify` commands are **dropped** (counted as `commands_dropped`); `:listen` / `:unlisten` / `:shutdown` are never dropped. Dropped messages are already persisted, so clients recover them via replay.
+
+## Self-healing watchdog
+
+A supervised thread that force-reconnects the PG connection if the consumer thread stops heart-beating.
+
+- **`watchdog_enabled`** (default `true`) — whether the watchdog thread runs at all.
+- **`watchdog_deadline`** (default `60`) — seconds without a heartbeat before the watchdog triggers a force-reconnect.
+- **`watchdog_interval`** (default `10`) — seconds between watchdog checks.
+
+## Metrics and the `on_metrics` hook
+
+- **`metrics_interval`** (default `15`) — seconds between periodic `Firehose.on_metrics` emissions. Only matters when `Firehose.on_metrics` is set.
+
+`Firehose.on_metrics` is set on the **`Firehose` module** (not the server), via
+`Firehose.on_metrics=`, and is `nil` by default (emission disabled). It's called
+once every `metrics_interval` seconds with **one argument — a flat metrics hash**
+(the return value of `Server#metrics_snapshot`):
+
+```ruby
+Firehose.on_metrics = ->(metrics) do
+  metrics.each { |key, value| StatsD.gauge("firehose.#{key}", value) }
+end
+```
+
+Exceptions raised by the block are logged at `warn` and swallowed, so a throwing
+reporter never crashes the emitter. The snapshot hash contains:
+
+- **Gauges:** `command_queue_depth`, `subscribed_channels`, `seconds_since_heartbeat`, `thread_alive` (`1`/`0`), `watchdog_alive` (`1`/`0`), `reconnects_current`.
+- **Counters:** `broadcasts_total`, `notifies_received`, `notify_failures`, `reconnects_total`, `watchdog_kicks`, `commands_dropped`, `replay_messages_delivered`.
+
+## Sample `config/firehose.yml`
+
+Keyed by Rails environment; keys match the accessor names above, and YAML
+anchors/aliases are supported.
+
+```yaml
+default: &default
+  cleanup_threshold: 100      # keep ~100 messages/stream (bounds replay window)
+  notify_pool_size: 4         # NOTIFY worker threads (0 = inline)
+  replay_on_reconnect: true
+  watchdog_enabled: true
+  watchdog_deadline: 60
+  reconnect_max_delay: 30
+
+development:
+  <<: *default
+
+production:
+  <<: *default
+  cleanup_threshold: 1000     # keep more history for replay
+  notify_pool_size: 8
+  max_command_queue_depth: 50000
+  # database_url: "postgres://user:pass@db-host:5432/app_production"
+```
+
+The equivalent `config/firehose.rb` (which takes precedence over the YAML):
+
+```ruby
+Firehose.server.configure do |config|
+  config.cleanup_threshold       = 1000
+  config.notify_pool_size        = 8
+  config.max_command_queue_depth = 50_000
+end
+```
 
 # How it works
 
@@ -212,13 +307,13 @@ The old release's documentation remains available, clearly marked, at
 
 The public surface in 2.0.0:
 
-- `Firehose` — top-level entry point; `Firehose.channel(name)`, `Firehose.configure`, `Firehose.on_metrics`.
+- `Firehose` — top-level entry point; `Firehose.channel(name)`, `Firehose.server`, `Firehose.on_metrics=`.
 - `Firehose::Channel` — a named stream; `#publish(data)`.
 - `Firehose::Stream` — controller mixin enabling **both** transports.
 - `Firehose::WebSocket` / `Firehose::SSE` — controller mixins for a single transport.
 - `Firehose::Streamable` — shared streaming behavior.
 - `Firehose::Queue` — ephemeral push/pop queue (not persisted like channels).
-- `Firehose::Server` — the streaming server.
+- `Firehose::Server` — the streaming server; holds all configuration (`Firehose.server.configure`).
 - `Firehose::Models::Channel` / `Firehose::Models::Message` — the ActiveRecord models behind `firehose_channels` / `firehose_messages`.
 - `Firehose::Helper` — optional Phlex view helper (`firehose_stream_from`).
 
