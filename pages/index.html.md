@@ -80,12 +80,14 @@ API. There is no shared upgrade path. If you're running the old release, the
 
 # Who's using Firehose
 
-In production at:
-
-<div class="not-prose my-6">
-  <a href="https://opengraphplus.com" class="group inline-flex max-w-md items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
-    <span class="whitespace-nowrap text-2xl font-extrabold tracking-tight text-ink">OpenGraph+</span>
-    <span class="text-sm leading-relaxed text-ink-mute">Automatic Open&nbsp;Graph preview images for every page &mdash; built on Falcon, Firehose &amp; Postgres, no Redis.</span>
+<div class="not-prose mt-8 grid max-w-xl grid-cols-2 divide-x divide-stone-200 rounded-2xl border border-stone-200">
+  <a href="https://www.polleverywhere.com" class="flex flex-col items-center justify-center gap-5 px-6 py-10 no-underline transition-colors hover:bg-stone-50">
+    <img src="/images/poll-everywhere.svg" alt="Poll Everywhere" class="h-8 w-auto grayscale opacity-75">
+    <span class="text-xs font-semibold uppercase tracking-widest text-ink-mute">Created at</span>
+  </a>
+  <a href="https://opengraphplus.com" class="flex flex-col items-center justify-center gap-5 px-6 py-10 no-underline transition-colors hover:bg-stone-50">
+    <span class="text-[1.4rem] font-bold leading-none tracking-tight text-ink-mute">OpenGraph+</span>
+    <span class="text-xs font-semibold uppercase tracking-widest text-ink-mute">In production</span>
   </a>
 </div>
 
