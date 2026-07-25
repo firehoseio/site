@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= current_page.data.fetch("title", "Firehose.io") %></title>
-    <meta name="description" content="Firehose 2.0 is real-time streaming for Rails over a dedicated PostgreSQL LISTEN/NOTIFY connection — WebSocket and SSE with database-backed replay. No ActionCable, no Redis.">
+    <meta name="description" content="Firehose 2.0 is real-time streaming for Rails over a dedicated PostgreSQL LISTEN/NOTIFY connection. WebSocket and SSE with database-backed replay. No ActionCable, no Redis.">
     <meta name="theme-color" content="#f2411c">
     <meta property="og:image" content="https://4v4zhxqq.ogplus.net/<%= current_page.request_path.sub(%r{\A/}, "").sub(%r{([^/])\z}, '\1/') %>">
     <meta name="twitter:card" content="summary_large_image">
@@ -41,14 +41,14 @@
         <div class="relative container-band py-20 sm:py-28">
           <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90">
             <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
-            Firehose 2.0 &mdash; real-time streaming for Rails on PostgreSQL
+            Firehose 2.0 &middot; real-time streaming for Rails on PostgreSQL
           </div>
           <h1 class="mt-6 text-5xl font-extrabold leading-none tracking-tight sm:text-7xl">
             Firehose<span class="font-light text-white/50">.io</span>
           </h1>
           <p class="mt-5 max-w-2xl text-xl font-medium text-white/90 sm:text-2xl">
             WebSocket and SSE streaming for Rails over a dedicated PostgreSQL
-            LISTEN/NOTIFY connection &mdash; with database-backed replay.
+            LISTEN/NOTIFY connection, with database-backed replay.
             No ActionCable, no Redis.
           </p>
           <div class="mt-9 flex flex-wrap items-center gap-4">
