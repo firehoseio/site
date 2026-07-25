@@ -5,18 +5,16 @@ hero: home
 
 Firehose 2.0 is **real-time streaming for Rails** over a dedicated PostgreSQL
 `LISTEN`/`NOTIFY` connection. It ships **WebSocket and Server-Sent Events**
-behind one API, and it **persists every message in Postgres** so a client that
-reconnects replays exactly what it missed. No ActionCable, no Redis, no polling,
-no extra processes.
+behind one API, and it **persists every message in Postgres**, so a client that
+reconnects replays exactly what it missed — no ActionCable, no Redis, no polling.
 
 # Why Firehose 2.0?
 
-ActionCable and Redis pub/sub are **fire-and-forget**: reconnect and you've lost
-whatever flew by while you were gone. Firehose persists every message as a real
-row in Postgres with a per-stream monotonic sequence and a global
-auto-incrementing id — so on reconnect the client replays the gap (via
-`last_event_id`) instead of silently dropping events. It uses infrastructure you
-already run.
+ActionCable and Redis pub/sub are **fire-and-forget**: reconnect, and the
+messages you missed are gone. Firehose stores every message as a row in Postgres
+with a per-stream sequence and a global id, so on reconnect the client replays
+what it missed (via `last_event_id`) instead of dropping it — on infrastructure
+you already run.
 
 - **Dual transports, one API** — WebSocket and SSE, selectable per controller.
 - **Database-backed persistence & replay** — every message is a row; reconnecting clients replay everything with `id > last_event_id`, in order.
@@ -46,8 +44,8 @@ Drop the custom element on the page. It opens the socket, tracks
 <firehose-stream-source path="/firehose" streams="dashboard,user:42"></firehose-stream-source>
 ```
 
-A message whose data is the magic value `"refresh"` triggers a Turbo refresh (or
-`location.reload()`) — the zero-JavaScript "just re-render the page" path.
+Publish `"refresh"` as the data and the client runs a Turbo refresh (or
+`location.reload()`) — updating the page without any custom JavaScript.
 
 # Getting Started
 
@@ -82,7 +80,7 @@ API. There is no shared upgrade path. If you're running the old release, the
 
 # Who's using Firehose
 
-Real products building on Firehose 2.0 in production:
+In production at:
 
 <div class="not-prose my-6">
   <a href="https://opengraphplus.com" class="group inline-flex max-w-md items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
