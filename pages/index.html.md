@@ -1,73 +1,84 @@
 ---
-title: Firehose | Build realtime web applications
+title: Firehose | Real-time streaming for Rails on PostgreSQL
+hero: home
 ---
 
-Firehose is a __minimally invasive way of building realtime web apps__ without complex protocols or rewriting your app from scratch. Its a dirt simple pub/sub server that __keeps client-side Javascript models in synch with the server__ code via WebSockets or HTTP long polling. It fully __embraces RESTful design patterns__, which means you'll end up with a nice API after you build your app.
+Firehose 2.0 is **real-time streaming for Rails** over a dedicated PostgreSQL
+`LISTEN`/`NOTIFY` connection. It ships **WebSocket and Server-Sent Events**
+behind one API, and it **persists every message in Postgres** so a client that
+reconnects replays exactly what it missed. No ActionCable, no Redis, no polling,
+no extra processes.
 
-# Why Firehose?
+# Why Firehose 2.0?
 
-__Work with grain of the web.__ Firehose embraces [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) design principles and consequently works great with any library that speaks HTTP. That means you can build simple realtime APIs, similar to Twitter's Site Stream API, that can be consumed without parsing complex protocols.
+ActionCable and Redis pub/sub are **fire-and-forget**: reconnect and you've lost
+whatever flew by while you were gone. Firehose persists every message as a real
+row in Postgres with a per-stream monotonic sequence and a global
+auto-incrementing id — so on reconnect the client replays the gap (via
+`last_event_id`) instead of silently dropping events. It uses infrastructure you
+already run.
 
-__Integrates with [Backbone.js](http://documentcloud.github.com/backbone/) and [Ember.js](http://emberjs.com/).__ Setting up a model in a web browser to listen for updates from the server is simple and straight-forward.
+- **Dual transports, one API** — WebSocket and SSE, selectable per controller.
+- **Database-backed persistence & replay** — every message is a row; reconnecting clients replay everything with `id > last_event_id`, in order.
+- **Dedicated PG LISTEN/NOTIFY connection** — fan-out runs on its own connection, outside the ActiveRecord pool.
+- **No Redis** — persistence, ordering, and fan-out all run on PostgreSQL alone.
+- **Automatic browser client** — a drop-in `<firehose-stream-source>` custom element subscribes, tracks the cursor, and reconnects with exponential backoff.
 
-```javascript
-// Backbone.js and Firehose.io
-var nutty = new Squirrel({
-  id: 7,
-  scale: 1.0,
-  wisdom: 'A nut a day keeps the doctor away.'
-});
-new Firehose.Consumer({
-  uri: '//firehose.io/squirrels/' + nutty.id,
-  message: function(json){
-    nutty.set(json);
-  }
-}).connect();
-```
+# Publish from anywhere
 
-# Hook it into an ORM, like ActiveRecord
-
-Great, it works from curl. So what? The last trick is to hook this into whatever ORM you're using to update all of the clients that something changed.
+Publishing is a single call from anywhere in your app — a model callback, a job,
+a controller:
 
 ```ruby
-require 'net/http'
-
-class Squirrel
-  after_commit do
-    req = Net::HTTP::Put.new("/squirrels/#{id}/firehose.json")
-    req.body = to_json
-    Net::HTTP.start('127.0.0.1', 7474).request(req)
-  end
-end
+Firehose.channel("dashboard").publish("refresh")
+Firehose.channel("dashboard").publish({ action: "update", id: 42 }.to_json)
 ```
 
-Then when the model is saved, it will drop a JSON representation of the model onto a path that's similar to the RESTful path conventions already in place. Subscribing to this feed is as simple as:
+Data is stored as text — pass a `String` and JSON-encode structured payloads
+yourself.
 
-    $ curl http://127.0.0.1/squirrels/:id/firehose.json
+# Consume in the browser
 
-Pretty cool huh?
+Drop the custom element on the page. It opens the socket, tracks
+`last_event_id`, and reconnects and replays automatically:
+
+```html
+<firehose-stream-source path="/firehose" streams="dashboard,user:42"></firehose-stream-source>
+```
+
+A message whose data is the magic value `"refresh"` triggers a Turbo refresh (or
+`location.reload()`) — the zero-JavaScript "just re-render the page" path.
 
 # Getting Started
 
-Install and run Redis.
+Add the gem and run the installer:
 
-    $ apt-get install redis-server  # Install on Ubuntu
-    $ brew install redis            # Install on Mac Homebrew
+```ruby
+# Gemfile
+gem "firehose"
+```
 
-Install the firehose gem.
+```bash
+bundle install
+bin/rails generate firehose:install
+```
 
-    $ gem install firehose
+The generator creates a `FirehoseController`, adds the WebSocket and SSE routes,
+pins the JavaScript client, and runs the migration.
 
-Fire up the server.
+**Requirements:** Ruby ≥ 3.2, Rails 8.1+, and PostgreSQL (LISTEN/NOTIFY is
+mandatory — there is no other backend).
 
-    $ firehose server
+Read the full [Firehose 2.0 documentation &rarr;](/v2/) for the controller
+callbacks, configuration, SSE, and how replay works.
 
-Now try it out.
+# Upgrading from Firehose 1.x
 
-    $ curl "http://127.0.0.1:7474/hi?cid=2039" &
-    $ curl -X PUT -d "Howdy friend" "http://127.0.0.1:7474/hi"
-
-If everything is working correctly, "Howdy friend" should have been displayed in your terminal.
+Firehose 2.0 is a **complete rewrite and is not compatible with Firehose 1.x** —
+different storage (Postgres, not Redis), different transport, and a different
+API. There is no shared upgrade path. If you're running the old release, the
+[**v1 (legacy) documentation**](/v1/) is still here, and the
+[migration notes](/v2/#migrating-from-firehose-1-x) explain what changed.
 
 # Talks
 
