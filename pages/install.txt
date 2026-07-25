@@ -1,0 +1,102 @@
+# Install Firehose in your Rails app
+
+This file is an install guide for an AI coding agent. Drop it into your Rails
+project (or paste it into your agent) and ask the agent to follow it.
+
+Firehose is real-time streaming for Rails: WebSocket and Server-Sent Events over
+a dedicated PostgreSQL LISTEN/NOTIFY connection, with database-backed replay so a
+client that reconnects never misses messages. No ActionCable, no Redis.
+
+Full docs: https://firehose.io/v2/
+Source: https://github.com/firehoseio/next
+
+Follow these steps in order. Do not skip ahead.
+
+## Requirements
+
+- Ruby >= 3.2
+- Rails 8.1 or newer (the install migration is declared for Rails 8.1)
+- PostgreSQL (required; Firehose uses LISTEN/NOTIFY and has no other backend)
+- An async server for production (Falcon / async-websocket)
+
+Confirm the app uses PostgreSQL before continuing. Firehose does not run on any
+other database.
+
+## Step 1: Add the gem
+
+Add to the Gemfile:
+
+    gem "firehose"
+
+Then run:
+
+    bundle install
+
+## Step 2: Run the installer
+
+    bin/rails generate firehose:install
+
+This generator:
+- creates app/controllers/firehose_controller.rb
+- adds the WebSocket and SSE routes
+- appends `import "firehose"` to app/javascript/application.js and pins the client via importmap
+- runs db:migrate, creating the firehose_channels and firehose_messages tables
+
+## Step 3: Publish messages from the server
+
+Publish from a model callback, a background job, or a controller. Data is stored
+as text, so JSON-encode structured payloads yourself:
+
+    Firehose.channel("dashboard").publish("refresh")
+    Firehose.channel("dashboard").publish({ action: "update", id: 42 }.to_json)
+
+## Step 4: Consume in the browser
+
+Add the custom element to any view, listing the streams to subscribe to:
+
+    <firehose-stream-source path="/firehose" streams="dashboard,user:42"></firehose-stream-source>
+
+It opens the WebSocket, tracks last_event_id, and reconnects and replays missed
+messages automatically. Each message also dispatches a `firehose:message`
+CustomEvent on `document` with detail { id, channel_id, sequence, stream, data, path }.
+
+Publishing the string "refresh" as the data triggers a Turbo refresh (or
+location.reload() when Turbo is absent), so you can update a page with no custom
+JavaScript.
+
+### Server-Sent Events (optional alternative to WebSocket)
+
+    const source = new EventSource("/firehose/sse?streams=dashboard,user:42")
+    source.addEventListener("dashboard", (e) => {
+      const { data, channel_id, sequence } = JSON.parse(e.data)
+    })
+
+## Step 5: Authorize streams (optional)
+
+In app/controllers/firehose_controller.rb, restrict which streams a connection
+may subscribe to:
+
+    def authorize_streams(streams)
+      streams.select { |s| current_user.can_access?(s) }
+    end
+
+## Step 6: Configure (optional)
+
+Create config/firehose.rb:
+
+    Firehose.server.configure do |config|
+      config.cleanup_threshold = 1000  # messages retained per stream (bounds replay)
+      config.notify_pool_size  = 8
+    end
+
+Full configuration reference: https://firehose.io/v2/
+
+## Verify
+
+1. Boot the app on an async server (for example, `falcon serve`).
+2. Load a page containing <firehose-stream-source>.
+3. Publish a message with Firehose.channel(...).publish(...) and confirm it
+   arrives in the browser.
+4. Reload or reconnect and confirm the missed messages replay in order.
+
+If anything is unclear, read the full docs at https://firehose.io/v2/.

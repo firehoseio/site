@@ -58,6 +58,8 @@ The `firehose:install` generator:
 - appends `import "firehose"` to `app/javascript/application.js` (and pins the client via importmap),
 - runs `db:migrate`, the engine auto-registers the migration that creates the `firehose_channels` and `firehose_messages` tables.
 
+Using an AI coding agent? Point it at [firehose.io/install.txt](https://firehose.io/install.txt) (or drop that file into your repo) and it will run these steps for you.
+
 > **Note on the gem name.** The gem is named `firehose` and reports version
 > `2.0.0` (`Firehose::VERSION`). This name is shared with the unrelated legacy
 > 1.x gem. 2.0 is a full rewrite under the same top-level `Firehose` module and

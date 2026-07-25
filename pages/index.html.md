@@ -90,6 +90,15 @@ mandatory, and there is no other backend).
 Read the full [Firehose 2.0 documentation &rarr;](/v2/) for the controller
 callbacks, configuration, SSE, and how replay works.
 
+<div class="not-prose my-6 flex items-start gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
+  <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 flex-none text-brand-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"></rect><path d="M12 8V4M8 3h8M9 13v2M15 13v2"></path></svg>
+  <p class="text-sm leading-relaxed text-ink">
+    <span class="font-semibold">Installing with an AI agent?</span>
+    Point your coding agent at <a href="/install.txt" class="font-semibold text-brand-600 hover:text-brand-700">firehose.io/install.txt</a>,
+    or drop that file into your repo, and it will add Firehose for you.
+  </p>
+</div>
+
 # Upgrading from Firehose 1.x
 
 Firehose 2.0 is a **complete rewrite, and it is not compatible with Firehose
@@ -128,7 +137,7 @@ These fine folks at [Poll Everywhere](https://www.polleverywhere.com/) worked ti
 
 # Source Code
 
-Fork it on [Github](https://github.com/firehoseio/firehose)
+Fork it on [Github](https://github.com/firehoseio/next)
 
 # Mailing List
 
