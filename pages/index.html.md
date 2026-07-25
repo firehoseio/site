@@ -80,6 +80,17 @@ API. There is no shared upgrade path. If you're running the old release, the
 [**v1 (legacy) documentation**](/v1/) is still here, and the
 [migration notes](/v2/#migrating-from-firehose-1-x) explain what changed.
 
+# Who's using Firehose
+
+Real products building on Firehose 2.0 in production:
+
+<div class="not-prose my-6">
+  <a href="https://opengraphplus.com" class="group inline-flex max-w-md items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <span class="whitespace-nowrap text-2xl font-extrabold tracking-tight text-ink">OpenGraph+</span>
+    <span class="text-sm leading-relaxed text-ink-mute">Automatic Open&nbsp;Graph preview images for every page &mdash; built on Falcon, Firehose &amp; Postgres, no Redis.</span>
+  </a>
+</div>
+
 # Talks
 
 * [SF Ruby 2026 "Building OpenGraph+ with Rails on Falcon"](https://beautifulruby.com/presentations/falcon) — building a SaaS on Falcon, Firehose, and GoodJob, all on Postgres without Redis.
