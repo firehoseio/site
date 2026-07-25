@@ -1,0 +1,29 @@
+# Reference compose for the Firehose.io Sitepress static site.
+#
+# NOT the active runtime. To activate, copy this file and the Dockerfile into
+# .loopyard/workspace/ and bring the stack up with the `docker_compose` MCP
+# tool (which runs against the host Colima daemon). See README.md here.
+#
+# This is a plain static site: no Postgres, no Redis, and it does NOT drive
+# Docker itself, so there is no docker.sock mount.
+services:
+  web:
+    build:
+      # Build context is the repo root (/workspace); paths below assume this
+      # file lives at .loopyard/workspace/ once activated.
+      context: ../../
+      dockerfile: .loopyard/workspace/Dockerfile
+    working_dir: /app
+    command: bundle exec sitepress server -a 0.0.0.0 -p 8080
+    environment:
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      # Live-mount the source for edit-and-refresh; keep gems in a named volume
+      # so the host bundle doesn't shadow the image's installed gems.
+      - ../../:/app
+      - bundle:/usr/local/bundle
+
+volumes:
+  bundle:
