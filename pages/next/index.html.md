@@ -1,12 +1,16 @@
 ---
-title: Firehose Next | Documentation
+title: Firehose next → 2.0 | Documentation
+doc_title: Firehose “next” shipped as 2.0
+doc_badge: v2.0.0
+doc_status: current
+doc_subtitle: The release that was “next” is now Firehose 2.0.
 ---
 
-# Firehose (next) documentation
+The work that lived here as the upcoming **next** release has shipped as
+**Firehose 2.0**.
 
-This is the documentation area for the upcoming **next** release of Firehose.
+Head to the [**Firehose 2.0 documentation &rarr;**](/v2/) for install, the
+publish/consume API, the `<firehose-stream-source>` browser element, and
+configuration.
 
-Content is coming soon. Add Markdown or HTML pages under `pages/next/` and they
-will be published beneath the `/next/` path.
-
-Looking for the current release? See the [v1 docs](/v1/).
+Looking for the old 1.x release? See the [v1 (legacy) docs](/v1/).

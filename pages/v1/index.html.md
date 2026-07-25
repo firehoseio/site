@@ -1,6 +1,16 @@
 ---
-title: Firehose v1 | Documentation
+title: Firehose v1 (legacy) | Documentation
+doc_title: Firehose 1.x documentation
+doc_badge: v1.x
+doc_status: legacy
+doc_subtitle: This documents the old 1.x release. The current release is Firehose 2.0 — a complete rewrite.
 ---
+
+> **Firehose 1.x is legacy.** The current release is [**Firehose 2.0**](/v2/), a
+> complete rewrite that is **not compatible** with 1.x — it streams over a
+> PostgreSQL `LISTEN`/`NOTIFY` connection with database-backed replay, and no
+> longer uses Redis. The 1.x documentation below is kept for existing
+> installations. See the [2.0 migration notes](/v2/#migrating-from-firehose-1-x).
 
 Firehose is a __minimally invasive way of building realtime web apps__ without complex protocols or rewriting your app from scratch. Its a dirt simple pub/sub server that __keeps client-side Javascript models in synch with the server__ code via WebSockets or HTTP long polling. It fully __embraces RESTful design patterns__, which means you'll end up with a nice API after you build your app.
 
