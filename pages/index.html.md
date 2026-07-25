@@ -82,6 +82,7 @@ API. There is no shared upgrade path. If you're running the old release, the
 
 # Talks
 
+* [SF Ruby 2026 "Building OpenGraph+ with Rails on Falcon"](https://beautifulruby.com/presentations/falcon) — building a SaaS on Falcon, Firehose, and GoodJob, all on Postgres without Redis.
 * [RailsConf 2012 "Streaming REST" slides](/pdfs/firehose.pdf)
 
 # Contributors
