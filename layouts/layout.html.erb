@@ -6,6 +6,8 @@
     <title><%= current_page.data.fetch("title", "Firehose.io") %></title>
     <meta name="description" content="Firehose 2.0 is real-time streaming for Rails over a dedicated PostgreSQL LISTEN/NOTIFY connection — WebSocket and SSE with database-backed replay. No ActionCable, no Redis.">
     <meta name="theme-color" content="#f2411c">
+    <meta property="og:image" content="https://4v4zhxqq.ogplus.net/<%= current_page.request_path.sub(%r{\A/}, "").sub(%r{([^/])\z}, '\1/') %>">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
